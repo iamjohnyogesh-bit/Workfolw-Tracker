@@ -1,6 +1,6 @@
 # FlowTrack — Daily Work & Task Tracking
 
-A complete, offline-first work and productivity tracker built with **plain HTML, CSS and vanilla JavaScript** — no framework, no build step, no backend. Everything runs in the browser and persists to `localStorage`, so your data stays on your machine.
+A complete, offline-first work and productivity tracker built with **plain HTML, CSS and vanilla JavaScript** — no framework, no build step, no backend. The app supports local browser storage and optional Supabase cloud accounts. In cloud mode, sign in with email/password to sync your workspace across devices.
 
 ## Running the app
 

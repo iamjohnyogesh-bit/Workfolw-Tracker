@@ -1,22 +1,36 @@
-# FlowTrack cloud setup (GitHub Pages + Supabase)
+# FlowTrack — Supabase Cloud Setup
 
-This project supports two modes:
-- **Cloud mode** when `assets/js/cloud-config.js` contains your valid Supabase project URL and **publishable/anon** key.
-- **Local mode** when those values are left as placeholders (existing local username/password and optional folder backup).
+## Files and hosting
+- `index.html` is the GitHub Pages entry point.
+- Runtime Supabase configuration is loaded from `assets/js/cloud-config.js`.
+- The root `cloud-config.js` is kept as a matching reference copy; editing it alone does not change the running app.
+- Upload the complete project contents (including the entire `assets/` folder) to the repository root.
 
-## Setup
-1. Create a Supabase project at https://supabase.com/dashboard.
-2. In **SQL Editor**, execute `supabase-setup.sql` to create a per-user workspace table with Row Level Security (RLS).
-3. In **Authentication > Providers**, enable Email authentication. Email confirmation is recommended. Configure the site's URL and redirect URLs under Authentication > URL Configuration.
-4. In **Project Settings / API Keys**, copy the project URL and **publishable (or legacy anon)** key into `assets/js/cloud-config.js`. **Never** use the secret/service_role key in a browser or GitHub repository.
-5. Rename `index(2).html` to `index.html` (or use the included `index.html`), commit the project contents to a GitHub repository, and enable **Settings > Pages > Deploy from a branch** (main, root).
-6. Visit your GitHub Pages URL, create an account with an **email address** and password (at least 8 characters), verify email if enabled, and sign in. Sign in on a second device using the same credentials to load your saved workspace.
+## Supabase configuration
+1. In Supabase SQL Editor, run `supabase-setup.sql` once.
+2. In Authentication → Sign In / Providers, enable Email.
+3. In Authentication → URL Configuration:
+   - Site URL: `https://iamjohnyogesh-bit.github.io/Workflow-Tracker/`
+   - Redirect URL: `https://iamjohnyogesh-bit.github.io/Workflow-Tracker/**`
+4. In `assets/js/cloud-config.js`, set the Supabase project URL and publishable key.
+   - A publishable key (`sb_publishable_...`) or legacy anon key is suitable for browser use.
+   - Never put a secret/service-role key in this repository.
 
-## Behavior / important limitations
-- Cloud mode uses **email/password**, not username/password. Email uniquely identifies a user. Authentication is handled by Supabase Auth; password hashes are never stored in the app's database or source code.
-- Each user can access only their own workspace via RLS. Do not remove or weaken the policies.
-- Each save updates the user's JSON workspace. Sync is debounced; a small 'Cloud: saved' status appears at bottom right. If offline or a save fails, the local browser copy remains. Use the **Retry sync** button to retry failed uploads.
-- On login, the latest cloud copy replaces the local cache for that account. Multiple simultaneous devices use **last write wins**, so editing concurrently can overwrite another device's changes. Wait for the 'Cloud: saved' status before switching devices and reload the other device before editing.
-- Existing **local-only accounts are not automatically migrated**. Sign up with an email in cloud mode and import an exported JSON backup through Settings if you need the old workspace.
-- Supabase free-tier availability and limits are subject to Supabase's terms.
-- Do not commit personal data backups or secret keys to GitHub. Public GitHub Pages is not a backend.
+## GitHub Pages
+- Repository → Settings → Pages
+- Source: Deploy from a branch
+- Branch: `main`
+- Folder: `/ (root)`
+- Save, then wait for the Pages deployment to finish.
+
+## Account and sync behavior
+- When cloud configuration is valid, the login screen asks for Email address and Password.
+- Create an account using email/password. If email confirmation is enabled, confirm the email before signing in.
+- Each signed-in account has one row in `public.workspaces`; RLS restricts access to the authenticated user's own row.
+- Task/workspace changes are saved locally first and queued for cloud sync. Look for `Cloud: saved ✓` before switching devices.
+- Sign in on another device with the same email/password to load the cloud workspace.
+- Existing local-only accounts are not automatically converted. Export a JSON backup from the old local workspace and import it after signing in to the cloud account.
+- Simultaneous editing on multiple devices is last-write-wins. Avoid editing the same account on two devices at once.
+
+## Troubleshooting
+If the login form still says **User name** instead of **Email address**, the deployed page is not loading the configured `assets/js/cloud-config.js`. Confirm that exact file in GitHub contains the real project URL and publishable key, commit it, then hard-refresh the Pages site (`Ctrl+Shift+R`). Also check DevTools Console/Network for a failed script request.
