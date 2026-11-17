@@ -1,0 +1,6 @@
+.DS_Store
+*.json.bak
+flowtrack-*.json
+.env
+.env.*
+node_modules/
